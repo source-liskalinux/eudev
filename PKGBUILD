@@ -6,39 +6,40 @@ arch=('x86_64')
 url="https://github.com/eudev-project/eudev"
 license=('GPL-2.0-or-later' 'LGPL-2.1-or-later')
 depends=('glibc' 'kmod' 'hwdata' 'util-linux')
-makedepends=('gperf' 'glib2' 'pkgconf' 'meson' 'ninja')
+makedepends=('gperf' 'glib2' 'pkgconf')
 provides=('udev' 'libudev.so')
 conflicts=('systemd' 'systemd-libs')
 source=("https://github.com/eudev-project/eudev/releases/download/v${pkgver}/eudev-${pkgver}.tar.gz")
 sha256sums=('SKIP')
 
 build() {
-    mkdir -p "${srcdir}/build"
-    meson setup "${srcdir}/eudev-${pkgver}" build \
+    cd "${srcdir}/eudev-${pkgver}"
+    ./configure \
         --prefix=/usr \
         --sysconfdir=/etc \
         --libexecdir=/usr/lib \
-        -Drootprefix=/ \
-        -Drootlibdir=/usr/lib \
-        -Drootlibexecdir=/usr/lib/udev \
-        -Dbindir=/usr/bin \
-        -Dsbindir=/usr/bin \
-        -Dhwdb=true \
-        -Dman=false \
-        -Dkmod=true
-    meson compile -C build
+        --bindir=/usr/bin \
+        --sbindir=/usr/bin \
+        --with-rootprefix= \
+        --with-rootlibdir=/usr/lib \
+        --with-rootlibexecdir=/usr/lib/udev \
+        --enable-hwdb \
+        --disable-manpages \
+        --enable-kmod
+    make
 }
 
 package() {
-    DESTDIR="${pkgdir}" meson install -C build
+    cd "${srcdir}/eudev-${pkgver}"
+    make DESTDIR="${pkgdir}" install
     install -d -m755 "${pkgdir}/sbin"
     ln -sf /usr/lib/udev/udevd "${pkgdir}/sbin/udevd"
     install -d -m755 "${pkgdir}/etc/udev/rules.d"
     install -d -m755 "${pkgdir}/usr/lib/udev/rules.d"
     install -d -m755 "${pkgdir}/run/udev"
     echo "Generating udev hwdb.bin inside package root...."
-    if [ -f "${srcdir}/build/src/udev/udevadm" ]; then
-        "${srcdir}/build/src/udev/udevadm" hwdb --update --root="${pkgdir}"
+    if [ -f "${srcdir}/eudev-${pkgver}/src/udev/udevadm" ]; then
+        "${srcdir}/eudev-${pkgver}/src/udev/udevadm" hwdb --update --root="${pkgdir}"
     else
         udevadm hwdb --update --root="${pkgdir}"
     fi
