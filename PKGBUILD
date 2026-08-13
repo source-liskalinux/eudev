@@ -14,7 +14,7 @@ sha256sums=('SKIP')
 
 build() {
     mkdir -p "${srcdir}/build"
-    meson setup "eudev-${pkgver}" build \
+    meson setup "${srcdir}/eudev-${pkgver}" build \
         --prefix=/usr \
         --sysconfdir=/etc \
         --libexecdir=/usr/lib \
