@@ -13,6 +13,7 @@ source=("https://github.com/eudev-project/eudev/releases/download/v${pkgver}/eud
 sha256sums=('SKIP')
 
 build() {
+    mkdir -p "${srcdir}/build"
     meson setup "eudev-${pkgver}" build \
         --prefix=/usr \
         --sysconfdir=/etc \
