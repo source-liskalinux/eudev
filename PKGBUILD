@@ -1,3 +1,8 @@
+# PKGBUILD For eudev
+
+# Contributor: Janorovic Volkov <janorovicvolkov@gmail.com>
+# Maintainer: Janorovic Volkov <janorovicvolkov@gmail.com>
+
 pkgname=eudev
 pkgver=3.2.14
 pkgrel=1
