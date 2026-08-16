@@ -24,7 +24,7 @@ build() {
         --sysconfdir=/etc \
         --libexecdir=/usr/lib \
         --bindir=/usr/bin \
-        --sbindir=/usr/bin \
+        --sbindir=/usr/sbin \
         --with-rootprefix= \
         --with-rootlibdir=/usr/lib \
         --with-rootlibexecdir=/usr/lib/udev \
@@ -37,6 +37,21 @@ build() {
 package() {
     cd "${srcdir}/eudev-${pkgver}"
     make DESTDIR="${pkgdir}" install
+    real_udevd=""
+    for candidate in usr/lib/udev/udevd usr/sbin/udevd usr/bin/udevd sbin/udevd bin/udevd; do
+        if [ -f "${pkgdir}/${candidate}" ] && [ ! -L "${pkgdir}/${candidate}" ]; then
+            real_udevd="${candidate}"
+            break
+        fi
+    done
+    if [ -z "${real_udevd}" ]; then
+        echo "ERROR: udevd binary not found anywhere under ${pkgdir} after install!" >&2
+        exit 1
+    fi
+    install -d -m755 "${pkgdir}/usr/lib/udev"
+    if [ "${real_udevd}" != "usr/lib/udev/udevd" ]; then
+        mv "${pkgdir}/${real_udevd}" "${pkgdir}/usr/lib/udev/udevd"
+    fi
     install -d -m755 "${pkgdir}/sbin"
     ln -sf /usr/lib/udev/udevd "${pkgdir}/sbin/udevd"
     install -d -m755 "${pkgdir}/etc/udev/rules.d"
