@@ -25,9 +25,6 @@ build() {
         --libexecdir=/usr/lib \
         --bindir=/usr/bin \
         --sbindir=/usr/sbin \
-        --with-rootprefix= \
-        --with-rootlibdir=/usr/lib \
-        --with-rootlibexecdir=/usr/lib/udev \
         --enable-hwdb \
         --disable-manpages \
         --enable-kmod
